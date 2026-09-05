@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
 
     // Cek duplikat
     const existing = await prisma.kategori.findFirst({
-      where: { namaKategori: { equals: namaKategori.trim(), mode: "insensitive" } },
+      where: { namaKategori: { equals: namaKategori.trim() } },
     });
     if (existing) {
       return NextResponse.json({ error: "Kategori sudah ada" }, { status: 409 });
