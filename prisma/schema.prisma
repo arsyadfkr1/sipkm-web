@@ -1,0 +1,230 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  masyarakat
+  admin
+  superadmin
+}
+
+enum TingkatUrgensi {
+  rendah
+  sedang
+  tinggi
+  darurat
+}
+
+enum StatusLaporan {
+  menunggu
+  diverifikasi
+  diproses
+  selesai
+  ditolak
+}
+
+enum TipeFoto {
+  sebelum
+  sesudah
+}
+
+enum TipeNotifikasi {
+  laporan
+  forum
+  sistem
+  galeri
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  namaLengkap String   @map("nama_lengkap") @db.VarChar(100)
+  email       String   @unique @db.VarChar(150)
+  password    String   @db.VarChar(255)
+  noTelpon    String?  @map("no_telpon") @db.VarChar(20)
+  alamat      String?  @db.Text
+  fotoProfil  String?  @map("foto_profil") @db.VarChar(255)
+  role        Role     @default(masyarakat)
+  isAktif     Boolean  @default(true) @map("is_aktif")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  laporan         Laporan[]         @relation("PelaporLaporan")
+  laporanAdmin    Laporan[]         @relation("AdminLaporan")
+  riwayatStatus   RiwayatStatus[]
+  komentarLaporan KomentarLaporan[]
+  forumTopik      ForumTopik[]
+  forumBalasan    ForumBalasan[]
+  notifikasi      Notifikasi[]
+  galeri          Galeri[]
+
+  @@map("users")
+}
+
+model Instansi {
+  id           Int      @id @default(autoincrement())
+  namaInstansi String   @map("nama_instansi") @db.VarChar(150)
+  singkatan    String?  @db.VarChar(30)
+  deskripsi    String?  @db.Text
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  kategori Kategori[]
+  galeri   Galeri[]
+
+  @@map("instansi")
+}
+
+model Kategori {
+  id           Int      @id @default(autoincrement())
+  namaKategori String   @map("nama_kategori") @db.VarChar(100)
+  ikon         String?  @db.VarChar(100)
+  warna        String   @default("#3b82f6") @db.VarChar(20)
+  instansiId   Int?     @map("instansi_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  instansi   Instansi?    @relation(fields: [instansiId], references: [id], onDelete: SetNull)
+  laporan    Laporan[]
+  forumTopik ForumTopik[]
+
+  @@map("kategori")
+}
+
+model Laporan {
+  id             Int            @id @default(autoincrement())
+  kodeLaporan    String         @unique @map("kode_laporan") @db.VarChar(20)
+  userId         Int            @map("user_id")
+  kategoriId     Int            @map("kategori_id")
+  judul          String         @db.VarChar(200)
+  deskripsi      String         @db.Text
+  latitude       Decimal?       @db.Decimal(10, 8)
+  longitude      Decimal?       @db.Decimal(11, 8)
+  alamatLokasi   String?        @map("alamat_lokasi") @db.VarChar(255)
+  tingkatUrgensi TingkatUrgensi @default(sedang) @map("tingkat_urgensi")
+  status         StatusLaporan  @default(menunggu)
+  catatanAdmin   String?        @map("catatan_admin") @db.Text
+  adminId        Int?           @map("admin_id")
+  isAnonim       Boolean        @default(false) @map("is_anonim")
+  views          Int            @default(0)
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+
+  user          User              @relation("PelaporLaporan", fields: [userId], references: [id], onDelete: Cascade)
+  admin         User?             @relation("AdminLaporan", fields: [adminId], references: [id], onDelete: SetNull)
+  kategori      Kategori          @relation(fields: [kategoriId], references: [id])
+  foto          LaporanFoto[]
+  riwayatStatus RiwayatStatus[]
+  komentar      KomentarLaporan[]
+  galeri        Galeri[]
+
+  @@map("laporan")
+}
+
+model LaporanFoto {
+  id        Int      @id @default(autoincrement())
+  laporanId Int      @map("laporan_id")
+  namaFile  String   @map("nama_file") @db.VarChar(255)
+  tipe      TipeFoto @default(sebelum)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  laporan Laporan @relation(fields: [laporanId], references: [id], onDelete: Cascade)
+
+  @@map("laporan_foto")
+}
+
+model RiwayatStatus {
+  id         Int      @id @default(autoincrement())
+  laporanId  Int      @map("laporan_id")
+  statusLama String?  @map("status_lama") @db.VarChar(50)
+  statusBaru String   @map("status_baru") @db.VarChar(50)
+  keterangan String?  @db.Text
+  diubahOleh Int      @map("diubah_oleh")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  laporan Laporan @relation(fields: [laporanId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [diubahOleh], references: [id], onDelete: Cascade)
+
+  @@map("riwayat_status")
+}
+
+model KomentarLaporan {
+  id          Int      @id @default(autoincrement())
+  laporanId   Int      @map("laporan_id")
+  userId      Int      @map("user_id")
+  isiKomentar String   @map("isi_komentar") @db.Text
+  isResmi     Boolean  @default(false) @map("is_resmi")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  laporan Laporan @relation(fields: [laporanId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("komentar_laporan")
+}
+
+model ForumTopik {
+  id         Int      @id @default(autoincrement())
+  userId     Int      @map("user_id")
+  judul      String   @db.VarChar(200)
+  isi        String   @db.Text
+  kategoriId Int?     @map("kategori_id")
+  upvotes    Int      @default(0)
+  views      Int      @default(0)
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kategori Kategori?      @relation(fields: [kategoriId], references: [id], onDelete: SetNull)
+  balasan  ForumBalasan[]
+
+  @@map("forum_topik")
+}
+
+model ForumBalasan {
+  id        Int      @id @default(autoincrement())
+  topikId   Int      @map("topik_id")
+  userId    Int      @map("user_id")
+  isi       String   @db.Text
+  isResmi   Boolean  @default(false) @map("is_resmi")
+  upvotes   Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  topik ForumTopik @relation(fields: [topikId], references: [id], onDelete: Cascade)
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("forum_balasan")
+}
+
+model Notifikasi {
+  id          Int            @id @default(autoincrement())
+  userId      Int            @map("user_id")
+  judul       String         @db.VarChar(200)
+  pesan       String         @db.Text
+  tipe        TipeNotifikasi @default(sistem)
+  referensiId Int?           @map("referensi_id")
+  isDibaca    Boolean        @default(false) @map("is_dibaca")
+  createdAt   DateTime       @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifikasi")
+}
+
+model Galeri {
+  id         Int      @id @default(autoincrement())
+  judul      String   @db.VarChar(200)
+  deskripsi  String?  @db.Text
+  namaFile   String   @map("nama_file") @db.VarChar(255)
+  laporanId  Int?     @map("laporan_id")
+  instansiId Int?     @map("instansi_id")
+  adminId    Int      @map("admin_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  laporan  Laporan?  @relation(fields: [laporanId], references: [id], onDelete: SetNull)
+  instansi Instansi? @relation(fields: [instansiId], references: [id], onDelete: SetNull)
+  admin    User      @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@map("galeri")
+}

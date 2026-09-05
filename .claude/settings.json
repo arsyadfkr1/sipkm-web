@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "aaaa",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "aaaa"
+          }
+        ]
+      }
+    ]
+  }
+}
