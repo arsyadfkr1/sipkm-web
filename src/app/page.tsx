@@ -913,7 +913,7 @@ export default function RootPage() {
             {/* Kolom 1: Branding */}
             <div style={{ flex: "1 1 300px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
-                <img src="/logo-sipkm.png" alt="Logo SIPKM" style={{ width: 36, height: 36, objectFit: "contain", dropShadow: "0 0 10px rgba(56,189,248,0.3)" }} />
+                <img src="/logo-sipkm.png" alt="Logo SIPKM" style={{ width: 36, height: 36, objectFit: "contain", filter: "drop-shadow(0 0 10px rgba(56,189,248,0.3))" }} />
                 <div>
                   <div style={{ fontSize: 18, fontWeight: 900, color: "white", letterSpacing: "-0.5px", lineHeight: 1 }}>SIPKM</div>
                   <div style={{ fontSize: 9, color: "#94a3b8", fontWeight: 600, letterSpacing: "0.5px", marginTop: 2 }}>BANDAR LAMPUNG</div>
