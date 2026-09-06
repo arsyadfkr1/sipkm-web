@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     const fotoUrl = `/uploads/avatars/${fileName}`;
     await prisma.user.update({
       where: { id: userId },
-      data: { foto: fotoUrl },
+      data: { fotoProfil: fotoUrl },
     });
 
     return NextResponse.json({ success: true, fotoUrl });

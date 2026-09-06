@@ -70,7 +70,7 @@ export default function ProfilClient({ user, stats }: { user: any; stats: any })
   const [showToast, setShowToast] = useState(false);
   const [toastMsg, setToastMsg] = useState("Tautan disalin!");
   const [toastType, setToastType] = useState<"success" | "error">("success");
-  const [profileImage, setProfileImage] = useState(user.foto || "/images/aku arsyad.jpg");
+  const [profileImage, setProfileImage] = useState(user.fotoProfil || "/images/aku arsyad.jpg");
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -184,7 +184,7 @@ export default function ProfilClient({ user, stats }: { user: any; stats: any })
         setTimeout(() => setShowToast(false), 3000);
         router.refresh();
       } else {
-        setProfileImage(user.foto || "/images/aku arsyad.jpg");
+        setProfileImage(user.fotoProfil || "/images/aku arsyad.jpg");
         URL.revokeObjectURL(previewUrl);
         setToastMsg(`❌ ${data.error || "Gagal mengupload foto"}`);
         setToastType("error");
@@ -192,7 +192,7 @@ export default function ProfilClient({ user, stats }: { user: any; stats: any })
         setTimeout(() => setShowToast(false), 4000);
       }
     } catch (error) {
-      setProfileImage(user.foto || "/images/aku arsyad.jpg");
+      setProfileImage(user.fotoProfil || "/images/aku arsyad.jpg");
       URL.revokeObjectURL(previewUrl);
       setToastMsg("❌ Gagal terhubung ke server.");
       setToastType("error");
