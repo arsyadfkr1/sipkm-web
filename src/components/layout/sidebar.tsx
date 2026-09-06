@@ -39,18 +39,18 @@ export default function Sidebar() {
         </div>
       </div>
 
-      <nav className="space-y-2 mb-8">
+      <nav className="space-y-2 mb-8 flex-1 overflow-y-auto pr-2 custom-scrollbar">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
             <Link
               key={item.label}
               href={item.href}
-              className={`flex w-full items-center gap-4 rounded-[2rem] border px-4 py-3 text-left transition-all duration-300 ${
+              className={`flex w-full shrink-0 items-center gap-4 rounded-[2rem] border px-4 py-3 text-left transition-all duration-300 ${
                 isActive ? "border-transparent bg-[#2563eb] text-white shadow-[0_20px_50px_-30px_rgba(37,99,235,0.75)]" : "border-slate-800/50 bg-white/5 text-slate-200 hover:border-sky-500/30 hover:bg-slate-950/80"
               }`}
             >
-              <span className="grid h-10 w-10 place-items-center rounded-full bg-slate-950/40 text-sky-300">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-slate-950/40 text-sky-300">
                 <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8">
                   <path d={item.icon} strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -61,16 +61,16 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Install PWA Button */}
-      <div className="mt-auto pt-4">
+      {/* Install PWA Button & Logout */}
+      <div className="mt-auto shrink-0 flex flex-col gap-4 pt-4 border-t border-slate-800/50">
         <InstallPwaButton />
         
         {/* Logout Button */}
         <button
           onClick={handleLogout}
-          className="flex w-full items-center gap-4 rounded-[2rem] border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-left transition-all duration-300 hover:border-rose-500/50 hover:bg-rose-500/20 hover:shadow-[0_0_20px_rgba(244,63,94,0.2)] text-rose-400 group"
+          className="flex w-full shrink-0 items-center gap-4 rounded-[2rem] border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-left transition-all duration-300 hover:border-rose-500/50 hover:bg-rose-500/20 hover:shadow-[0_0_20px_rgba(244,63,94,0.2)] text-rose-400 group"
         >
-          <span className="grid h-10 w-10 place-items-center rounded-full bg-rose-500/20 text-rose-400 transition-colors group-hover:bg-rose-500 group-hover:text-white">
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-rose-500/20 text-rose-400 transition-colors group-hover:bg-rose-500 group-hover:text-white">
             <svg viewBox="0 0 24 24" className="h-5 w-5 translate-x-0.5" fill="none" stroke="currentColor" strokeWidth="2.2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
             </svg>
